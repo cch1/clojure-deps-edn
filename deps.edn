@@ -168,6 +168,19 @@
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;; Project Packaging
 
+  ;; garamond - lein-v-like extraction of pom details from git environment.
+  ;; https://github.com/workframers/garamond
+  ;; override the GroupID as the default is probably not for you.
+  ;; - query version from git status
+  ;; cd project-directory && clojure -M:project/pom
+  ;; - build pom.xml file from git status
+  ;; cd project-directory && clojure -M:project/pom -p
+  :project/pom
+  {:main-opts ["-m" "garamond.main" "-g" "com.hapgood"]
+   :replace-paths []
+   ;; because we don't need the project's dependencies loaded -graph parses the deps.edn "out-of-band":
+   :replace-deps {com.workframe/garamond {:mvn/version "0.4.0"}}}
+
   ;; depstar - build jars, uberjars
   ;; https://github.com/seancorfield/depstar
   ;; over-ride the :main-class as the name is unlikely to match your project
