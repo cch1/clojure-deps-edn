@@ -1,4 +1,5 @@
 ;; The deps.edn file describes the information needed to build a classpath.
+;; Source: https://github.com/practicalli/clojure-deps-edn
 ;;
 ;; deps.edn configuration is a combination of
 ;; - install-level (latest Clojure version at install time)
@@ -101,15 +102,15 @@
 
   :project/new
   {:replace-deps {seancorfield/clj-new {:mvn/version "1.1.226"}}
-   :exec-fn    clj-new/create
-   :exec-args  {:template lib :name practicalli/playground}
-   :main-opts  ["-m" "clj-new.create"]}
+   :exec-fn      clj-new/create
+   :exec-args    {:template lib :name practicalli/playground}
+   :main-opts    ["-m" "clj-new.create"]}
 
   ;; ALPHA status: Add 'something' to existing project (subject to change)
   :project/add
   {:replace-deps {seancorfield/clj-new {:mvn/version "1.1.226"}}
-   :exec-fn    clj-new/generate
-   :main-opts  ["-m" "clj-new.generate"]}
+   :exec-fn      clj-new/generate
+   :main-opts    ["-m" "clj-new.generate"]}
 
   ;; End of: Creating projects from templates
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -142,6 +143,18 @@
    :main-opts ["-m" "find-deps.core"]}
 
 
+  ;; Visualizing dependencies in a project
+  ;; https://github.com/clojure/tools.deps.graph
+  ;; clojure -X:project/graph-deps
+  :project/graph-deps
+  {:replace-deps {org.clojure/tools.deps.graph {:mvn/version "1.0.56"}}
+   :main-opts    ["-m" "clojure.tools.deps.graph"] ;; deprecated
+   :ns-default   clojure.tools.deps.graph
+   :exec-fn      graph
+   :exec-args    {:output "project-dependencies-graph.png"
+                  :size   true}}
+
+
   ;; Dependency version management
   ;; https://github.com/liquidz/antq
   ;; Manage versions for maven and git dependencies
@@ -152,14 +165,14 @@
   ;; cd ~/.clojure && clojure -M:project/outdated
   :project/outdated
   {:replace-deps {antq/antq {:mvn/version "RELEASE"}}
-   :main-opts  ["-m" "antq.core"]}
+   :main-opts    ["-m" "antq.core"]}
 
 
   ;; The classic project for checking maven based dependencies
   ;; clojure -M:project/outdated-mvn
   :project/outdated-mvn
   {:replace-deps {deps-ancient/deps-ancient {:mvn/version "RELEASE"}}
-   :main-opts  ["-m" "deps-ancient.deps-ancient"]}
+   :main-opts    ["-m" "deps-ancient.deps-ancient"]}
 
   ;; End of: Projects and dependencies
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -190,20 +203,20 @@
   ;; clojure -X:project/jar :jar '"project-name.jar"' :main-class domain.application
   :project/jar
   {:replace-deps {seancorfield/depstar {:mvn/version "1.1.126"}}
-   :exec-fn    hf.depstar/jar
-   :exec-args  {:jar        "project.jar"
-                :aot        true
-                :main-class project.core}}
+   :exec-fn      hf.depstar/jar
+   :exec-args    {:jar        "project.jar"
+                  :aot        true
+                  :main-class project.core}}
 
   ;; Uberjar archive of the project, including Clojure runtime
   ;; clojure -X:project/uberjar :main-class domain.application
   ;; clojure -X:project/uberjar :jar '"project-name.jar"' :main-class domain.application
   :project/uberjar
   {:replace-deps {seancorfield/depstar {:mvn/version "1.1.126"}}
-   :exec-fn    hf.depstar/uberjar
-   :exec-args  {:jar        "uber.jar"
-                :aot        true
-                :main-class project.core}}
+   :exec-fn      hf.depstar/uberjar
+   :exec-args    {:jar        "uber.jar"
+                  :aot        true
+                  :main-class project.core}}
 
 
   ;; uberdeps - uberjar builder
@@ -212,7 +225,7 @@
 
   :project/uberdeps
   {:replace-deps {uberdeps/uberdeps {:mvn/version "1.0.2"}}
-   :main-opts  ["-m" "uberdeps.uberjar"]}
+   :main-opts    ["-m" "uberdeps.uberjar"]}
 
   ;; Packaging libraries and applications
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -239,14 +252,14 @@
 
   :project/clojars
   {:replace-deps {slipset/deps-deploy {:mvn/version "RELEASE"}}
-   :main-opts  ["-m" "deps-deploy.deps-deploy"
-                "deploy"]}
+   :main-opts    ["-m" "deps-deploy.deps-deploy"
+                  "deploy"]}
 
   :project/clojars-signed
   {:replace-deps {slipset/deps-deploy {:mvn/version "RELEASE"}}
-   :main-opts  ["-m" "deps-deploy.deps-deploy"
-                "deploy"
-                :true]}
+   :main-opts    ["-m" "deps-deploy.deps-deploy"
+                  "deploy"
+                  :true]}
 
   ;; DEPRECATED - use `clojure -X:deps mvn-install`
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -279,11 +292,11 @@
 
   ;; clojure -M:lib/java11-source
   :lib/java8-source
-  {:replace-deps
+  {:extra-deps
    {openjdk/java-sources {:local/root "/usr/lib/jvm/openjdk-8/lib/src.zip"}}}
 
   :lib/java11-source
-  {:replace-deps
+  {:extra-deps
    {openjdk/java-sources {:local/root "/usr/lib/jvm/openjdk-11/lib/src.zip"}}}
 
   ;; End of: Java Sources
@@ -393,17 +406,26 @@
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;; Middleware
 
-  ;; - start a REPL with an nREPL server
+  ;; - start an interactive REPL with a headless nREPL server
   ;; clojure -M:middleware/nrepl
   :middleware/nrepl {:extra-deps {nrepl/nrepl {:mvn/version "0.8.2"}}
-                     :main-opts  ["-m" "nrepl.cmdline"]}
+                     :main-opts  ["-m" "nrepl.cmdline" "-i"]}
 
   ;; Run a REPL using nREPL server for access by cider-connect-clj
   ;; clojure -M:middleware/cider-clj
   :middleware/cider-clj
-  {:extra-deps {cider/cider-nrepl {:mvn/version "0.25.3"}}
+  {:extra-deps {nrepl/nrepl       {:mvn/version "0.8.2"}
+                cider/cider-nrepl {:mvn/version "0.25.3"}}
    :main-opts  ["-m" "nrepl.cmdline"
                 "--middleware" "[cider.nrepl/cider-middleware]"]}
+
+  :middleware/cider-clj-refactor
+  {:extra-deps {nrepl/nrepl       {:mvn/version "0.8.2"}
+                refactor-nrepl    {:mvn/version "2.5.0"}
+                cider/cider-nrepl {:mvn/version "0.25.3"}}
+   :main-opts  ["-m" "nrepl.cmdline"
+                "--middleware" "[refactor-nrepl.middleware/wrap-refactor,cider.nrepl/cider-middleware]"]}
+
 
   ;; Run a REPL using nREPL server for access by cider-connect-cljs
   ;; clojure -M:middleware/cider-cljs
@@ -624,7 +646,7 @@
   ;; https://github.com/jonase/eastwood#running-eastwood-in-a-repl
 
   :lint/eastwood
-  {:replace-deps {jonase/eastwood {:mvn/version "RELEASE"}}
+  {:extra-deps {jonase/eastwood {:mvn/version "RELEASE"}}
    :main-opts  ["-m" "eastwood.lint"
                 "{:source-paths,[\"src\"],:test-paths,[\"test\"]}"]}
 
@@ -634,7 +656,7 @@
 
   :lint/idiom
   {:replace-deps {tvaughan/kibit-runner {:mvn/version "1.0.1"}}
-   :main-opts  ["-m" "kibit-runner.cmdline"]}
+   :main-opts    ["-m" "kibit-runner.cmdline"]}
 
   ;; End of Linting/ static analysis
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

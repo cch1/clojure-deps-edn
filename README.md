@@ -1,4 +1,4 @@
-![Practicalli Clojure deps.edn user wide configuration for Clojure projects](https://raw.githubusercontent.com/practicalli/graphic-design/master/practicalli-clojure-deps.png)
+![Practicalli Clojure deps.edn user wide configuration for Clojure projects](https://raw.githubusercontent.com/practicalli/graphic-design/live/practicalli-clojure-deps.png)
 
 > MAJOR CHANGES: practicalli/clojure-deps-edn recommends using [Clojure CLI tools](https://clojure.org/guides/getting_started) version 1.10.1.697 or later.
 > Aliases are now qualified keywords, which is recommended in general for using keywords in Clojure.
@@ -10,8 +10,9 @@
 Aliases with common options are provided for convenience and to minimize the amount of cognitive load required to remember how to use aliases. Initial inspiration taken from [seancorfield/dot-clojure](https://github.com/seancorfield/dot-clojure).
 
 # Contents
-
+* [Installing practicalli/clojure-deps-edn](#installing-practicalli-clojure-deps-edn)
 * [Updating practicalli/clojure-deps-edn](#updating-practicalli-clojure-deps-edn)
+* [Common development tasks](#common-development-tasks)
 * [Aliases](#aliases)
     * [REPL experience](#repl-experience) | [Projects](#clojure-projects) | [Java sources](#java-sources) | [Databases](#databases-and-drivers) | [Data Inspectors](#data-inspectors) | [Middleware](#middleware) | [Clojure Spec](#clojure-specification) | [Unit Testing](#unit-testing-frameworks) | [Test runners](#test-runners-and-test-coverage-tools) | [Lint tools](#lint-tools) | [Visualize vars and deps](#visualizing-project-vars-and-library-dependencies) | [Performance testing](#performance-testing)
 * [Library repositories](#library-repositories)
@@ -24,7 +25,7 @@ clojure -Sdescribe
 ```
 
 
-# Installing Clojure deps.edn
+# Install Practicalli clojure-deps-edn
 Fork the practicalli/clojure-deps-edn repository and clone your fork to an existing `~/.clojure/` directory (eg. `$HOME/.clojure` or `%HOME%\.clojure`).
 
 ```shell
@@ -35,7 +36,7 @@ The configuration from `~/.clojure/deps.edn` is now available for all Clojure CL
 
 Any directory containing a `deps.edn` file is considered a Clojure project. A `deps.edn` file can contain an empty hash-map, `{}` or hash-map with configuration.  The project `deps.edn` file is merged with the user wide configuration, with the project `deps.edn` keys taking precedence if there is duplication.
 
-![Clojure CLI tools deps.edn configuration precedence](https://raw.githubusercontent.com/jr0cket/developer-guides/master/clojure/clojure-cli-tools-deps-edn-configuration-precedence.png)
+![Clojure CLI tools deps.edn configuration precedence](https://raw.githubusercontent.com/practicalli/graphic-design/live/clojure/clojure-cli-tools/clojure-cli-tools-deps-edn-configuration-precedence.png)
 
 See the rest of this readme for examples of how to use each alias this configuration contains.
 
@@ -50,24 +51,31 @@ clojure -M:project/outdated
 ```
 
 # Common development tasks
-How to run common tasks for Clojure development
+How to run common tasks for Clojure development.
+* Built-in tasks require no additional configuration.
+* User aliases should be added to `~/.clojure/deps.edn`.
+* Project aliases should be added to the individual project deps.edn file (or may be part of a template).
+* User/Project alias can be defined in both user and project deps.edn files (typically added to project deps.edn for external running such as Continuous Integration)
 
-| Task                              | Command                                                         | Built-in  |
-|-----------------------------------|-----------------------------------------------------------------|-----------|
-| Create project (clojure exec)     | `clojure -X:project/new :template app :name practicalli/my-app` | Add alias |
-| Create project (clojure main)     | `clojure -M:project/new app practicalli/my-app`                 | Add alias |
-| Download dependencies             | `clojure -Spath` or `clojure -P`  (plus optional aliases)       | Yes       |
-| Run the project                   | `clojure -M -m domain.main-namespace`                           | Yes       |
-| Run the project                   | `clojure -X:project/run -m domain.main-namespace`               | Add alias |
-| Find libraries (mvn & git)        | `clojure -M:project/find-deps library-name`                     | Add alias |
-| Check for new dependency versions | `clojure -M:project/outdated`                                   | Add alias |
-| Run tests                         | `clojure -M:test/runner`                                        | Add alias |
-| Package library                   | `clojure -X:project/jars`                                       | Add alias |
-| Deploy library locally            | `clojure -X:deps mvn-install`                                   | Yes       |
-| Package application               | `clojure -X:project/uberjar`                                    | Add alias |
+| Task                                                    | Command                                                         | Configuration      |
+|---------------------------------------------------------|-----------------------------------------------------------------|--------------------|
+| Create project (clojure exec)                           | `clojure -X:project/new :template app :name practicalli/my-app` | User alias         |
+| Run REPL (rebel readline)                               | `clojure -M:repl/rebel`                                         | User alias         |
+| Run REPL (rebel and nrepl)                              | `clojure -M:repl/rebel-nrepl`                                   | User alias         |
+| Download dependencies                                   | `clojure -Spath` or `clojure -P`  (plus optional aliases)       | Built-in           |
+| Find libraries (mvn & git)                              | `clojure -M:project/find-deps library-name`                     | User alias         |
+| Generate image of project dependency graph              | `clojure -X:project/graph-deps`                                 | User alias         |
+| Check for new dependency versions                       | `clojure -M:project/outdated`                                   | User alias         |
+| Run tests                                               | `clojure -M:test/runner`                                        | User/Project alias |
+| Run the project                                         | `clojure -M -m domain.main-namespace`                           | Built-in           |
+| [Run the project](https://youtu.be/u5VoFpsntXc?t=2166)* | `clojure -X:project/run`                                        | Project alias      |
+| Package library                                         | `clojure -X:project/jar`                                        | User/Project alias |
+| Deploy library locally                                  | `clojure -X:deps mvn-install`                                   | Built-in           |
+| Package application                                     | `clojure -X:project/uberjar`                                    | User/Project alias |
+
+> Add alias `:project/run` to the deps.edn file in the root of a project: `:project/run {:ns-default domain.namespace :exec-fn -main}` - see this video for an example https://youtu.be/u5VoFpsntXc?t=2166
 
 > Most aliases use the `-M` flag.  Only use the `-X` flag when you know it is supported by that task
-
 
 
 # Aliases
@@ -155,16 +163,21 @@ Then the project can be run using `clojure -X:project/run` and arguments can opt
 ## Project dependencies
 
 * [`:project/check`](https://github.com/athos/clj-check.git) - detailed report of compilation errors for a project
+* [`:project/graph-deps`](https://github.com/clojure/tools.deps.graph) - graph of project dependencies (png image)
+* [`:project/find-deps`](https://github.com/hagmonk/find-deps) - fuzzy search for libraries to add as dependencies
 * [`:project/outdated`](https://github.com/liquidz/antq) - report newer versions for maven and git dependencies
 * [`:project/outdated-mvn`](https://github.com/slipset/deps-ancient) - check for newer dependencies (maven only)
 
-| Command                                              | Description                                               |
-|------------------------------------------------------|-----------------------------------------------------------|
-| `clojure -M:project/check`                           | detailed report of compilation errors for a project       |
-| `clojure -M:project/find-deps library-name`          | fuzzy search Maven & Clojars                              |
-| `clojure -M:project/find-deps -F:merge library-name` | fuzzy search Maven & Clojars and save to project deps.edn |
-| `clojure -M:project/outdated`                        | report newer versions for maven and git dependencies      |
-| `clojure -M:project/outdated-mvn`                    | check for newer dependencies (maven only)                 |
+| Command                                              | Description                                                          |
+|------------------------------------------------------|----------------------------------------------------------------------|
+| `clojure -M:project/outdated`                        | report newer versions for maven and git dependencies                 |
+| `clojure -M:project/outdated-mvn`                    | check for newer dependencies (maven only)                            |
+| `clojure -M:project/check`                           | detailed report of compilation errors for a project                  |
+| `clojure -M:project/find-deps library-name`          | fuzzy search Maven & Clojars                                         |
+| `clojure -M:project/find-deps -F:merge library-name` | fuzzy search Maven & Clojars and save to project deps.edn            |
+| `clojure -X:project/graph-deps`                      | generate png image of project dependencies from projet deps.edn file |
+| `clojure -M:project/outdated`                        | report newer versions for maven and git dependencies                 |
+| `clojure -M:project/outdated-mvn`                    | check for newer dependencies (maven only)                            |
 
 
 ### Project packaging
@@ -323,15 +336,16 @@ Run a REPL on the command line for access by `cider-connect-` commands, providin
 ### nREPL
 * `:middleware/nrepl` - Clojure REPL with an nREPL server
 * `:middleware/cider-clj` - Clojure REPL with nREPL server and CIDER dependencies for `cider-connect-clj`
+* `:middleware/cider-clj-refactor` - as :middleware/cider-clj with clj-refactor added
 * `:middleware/cider-cljs` - ClojureScript REPL with nREPL server and CIDER dependencies for `cider-connect-cljs`
 
-Use the aliases with either `-M` or `-X` flags on the Clojure command line.
 
-| Command                             | Description                                                                           |
-|-------------------------------------|---------------------------------------------------------------------------------------|
-| `clojure -M:middleware/nrepl`      | Run a Clojure REPL that includes nREPL server                                         |
-| `clojure -M:middleware/cider-clj`  | Run a Clojure REPL that includes nREPL server and CIDER connection dependencies       |
-| `clojure -M:middleware/cider-cljs` | Run a ClojureScript REPL that includes nREPL server and CIDER connection dependencies |
+| Command                                    | Description                                                                                      |
+|--------------------------------------------|--------------------------------------------------------------------------------------------------|
+| `clojure -M:middleware/nrepl`              | Run a Clojure REPL that includes nREPL server                                                    |
+| `clojure -M:middleware/cider-clj`          | Run a Clojure REPL that includes nREPL server and CIDER connection dependencies                  |
+| `clojure -M:middleware/cider-clj-refactor` | Run a Clojure REPL that includes nREPL server and CIDER connection dependencies and clj-refactor |
+| `clojure -M:middleware/cider-cljs`         | Run a ClojureScript REPL that includes nREPL server and CIDER connection dependencies            |
 
 
 
