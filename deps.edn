@@ -278,12 +278,11 @@
   {:main-opts ["-m" "garamond.main"]
    ;; because we don't need the project's dependencies loaded -graph parses the deps.edn "out-of-band":
    :replace-deps {com.workframe/garamond {:mvn/version "0.4.0"}}}
-  ;; cd project-directory && clojure -M:project/pom
   ;; - build pom.xml file from git status
-  ;; cd project-directory && clojure -M:project/pom -p
+  ;; NB: The defaults are almost certainly not right for you, and you probably should add an `scm-url` option.
+  ;; cd project-directory && clojure -M:project/pom
   :project/pom
-  {:main-opts ["-m" "garamond.main" "-g" "com.hapgood"]
-   :replace-paths []
+  {:main-opts ["-m" "garamond.main" "-g" "com.hapgood" "-p"]
    ;; because we don't need the project's dependencies loaded -graph parses the deps.edn "out-of-band":
    :replace-deps {com.workframe/garamond {:mvn/version "0.4.0"}}}
 
